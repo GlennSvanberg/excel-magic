@@ -4,7 +4,8 @@ import pandas as pd
 import os
 from werkzeug.utils import secure_filename
 from agent import do_magic, get_head_of_file
-
+from flask_restx import fields
+from flask import url_for
 app = Flask(__name__)
 api = Api(app, version='1.0', title='Excel Magic API', description='A simple API doing Magic with Excel')
 ns = api.namespace('api', description='API operations')
@@ -41,19 +42,36 @@ class GetHead(Resource):
         print(head)
         return head.to_csv(index=False)
 
-do_magic_model = api.model('DoMagic', {
-    'files': fields.List(fields.String, required=True, description='List of files'),
-    'messages': fields.List(fields.String, required=True, description='List of messages')
+
+message_model = api.model('Message', {
+    'sender': fields.String(required=True,  enum=["User", "AI"],description='The sender of the message'),
+    'message': fields.String(required=True, description='The content of the message')
 })
 
+# Update the do_magic_model to include the messages using fields.List with fields.Nested
+do_magic_model = api.model('DoMagic', {
+    'files': fields.List(fields.String, required=True, description='List of files'),
+    'messages': fields.List(fields.Nested(message_model), required=True, description='List of messages')
+})
 @ns.route('/do_magic')
 class DoMagicRoute(Resource):
     @api.expect(do_magic_model)
     def post(self):
         '''Perform magic on files and messages'''
         data = api.payload
-        files = do_magic(data['files'], data['messages'])
-        return {'files': files}
-
+        messages = [{"sender": msg["sender"], "message": msg["message"]} for msg in data['messages']]
+        
+        # Assuming do_magic returns a list of filenames located in static/output
+        filenames, ai_response = do_magic(data['files'], messages)
+        
+        # Construct URLs for each file
+        file_urls = [url_for('static', filename=f'output/{filename}', _external=True) for filename in filenames]
+        
+        # Include a message in the response
+        return {
+            'files': file_urls,
+            'message': ai_response
+        }
+    
 if __name__ == '__main__':
-    app.run("0.0.0.0", 5000, debug=True)
+    app.run("0.0.0.0", 7000, debug=True)

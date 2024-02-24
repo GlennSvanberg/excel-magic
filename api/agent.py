@@ -181,7 +181,7 @@ def do_magic(files, messages):
         copy_files_to_output(file)
     clear_playground()
 
-    return files
+    return files, ai_response
 def get_head_of_file(file):
     df = pd.read_excel(f'uploads/{file}')
     return df.head()
