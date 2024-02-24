@@ -25,3 +25,4 @@ var/
 /static/
 /uploads/
 .DS_Store
+.vscode/

@@ -8,7 +8,7 @@ class Config:
     # Allowed file extensions for upload
     ALLOWED_EXTENSIONS = {'xlsx', 'xls'}
     # Maximum file size that can be uploaded (in bytes)
-    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16 MB
+    MAX_CONTENT_LENGTH = 128 * 1024 * 1024  # 128 MB
 
     # Ensure the upload folder exists
     if not os.path.exists(UPLOAD_FOLDER):

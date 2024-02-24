@@ -1,59 +1,59 @@
-from flask import Flask, request, send_from_directory, jsonify
+from flask import Flask, request, send_from_directory
+from flask_restx import Api, Resource, fields
 import pandas as pd
 import os
 from werkzeug.utils import secure_filename
+from agent import do_magic, get_head_of_file
 
 app = Flask(__name__)
+api = Api(app, version='1.0', title='Excel Magic API', description='A simple API doing Magic with Excel')
+ns = api.namespace('api', description='API operations')
+
 app.config['UPLOAD_FOLDER'] = 'uploads'
 app.config['STATIC_FOLDER'] = 'static'
 
 # Ensure the upload folder exists
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-@app.route('/upload', methods=['POST'])
-def upload_file():
-    if 'file' not in request.files:
-        return jsonify({'error': 'No file part'}), 400
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({'error': 'No selected file'}), 400
-    if file:
+
+@ns.route('/upload')
+class UploadFile(Resource):
+    @api.response(200, 'Success')
+    #@api.response(400, 'Validation Error')
+    def post(self):
+        '''Upload a file'''
+        print("Uploading file...")
+        args= request.files
+        print(args)
+        file = args['file']
+        if file.filename == '':
+            api.abort(400, 'No selected file')
         filename = secure_filename(file.filename)
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
-        return jsonify({'message': f'File {filename} uploaded successfully'}), 200
-    
+        return {'message': f'File {filename} uploaded successfully'}, 200
 
-@app.route('/modify', methods=['POST'])
-def modify_file():
-    data = request.json
-    filename = data.get('filename')
-    modifications = data.get('modifications')
-    
-    if not filename or not modifications:
-        return jsonify({'error': 'Filename and modifications are required'}), 400
-    
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    if not os.path.exists(filepath):
-        return jsonify({'error': 'File does not exist'}), 404
-    
-    try:
-        df = pd.read_excel(filepath)
-        # Example modification: filter columns based on modifications received
-        # This part should be adapted based on the specific modifications required
-        if 'columns' in modifications:
-            df = df[modifications['columns']]
-        # Save the modified file
-        modified_filepath = os.path.join(app.config['STATIC_FOLDER'], f'modified_{filename}')
-        df.to_excel(modified_filepath, index=False)
-        return jsonify({'message': f'File {filename} modified successfully', 'modified_file': f'modified_{filename}'}), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    
-    
-@app.route('/download/<filename>')
-def download_file(filename):
-    return send_from_directory(app.config['STATIC_FOLDER'], filename)
+@ns.route('/uploads/<filename>')
+class GetHead(Resource):
+    def get(self, filename):
+        '''Get the head of a file'''
+        head = get_head_of_file(filename)
+        print(head)
+        return head.to_csv(index=False)
+
+do_magic_model = api.model('DoMagic', {
+    'files': fields.List(fields.String, required=True, description='List of files'),
+    'messages': fields.List(fields.String, required=True, description='List of messages')
+})
+
+@ns.route('/do_magic')
+class DoMagicRoute(Resource):
+    @api.expect(do_magic_model)
+    def post(self):
+        '''Perform magic on files and messages'''
+        data = api.payload
+        files = do_magic(data['files'], data['messages'])
+        return {'files': files}
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run("0.0.0.0", 5000, debug=True)
