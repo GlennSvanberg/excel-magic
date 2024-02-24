@@ -10,3 +10,10 @@ services:
     environment:
       FLASK_APP: app.py
       FLASK_ENV: development
+  excel-magic-client: # name of the Vue.js service
+    build: 
+      context: ./client # this should be the path to your Vue app directory
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    restart: unless-stopped
