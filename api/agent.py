@@ -53,7 +53,7 @@ def execute_code(input_code: str) -> str:
         # print current dir
         print(os.getcwd())
         # Change the current working directory to /playground
-        os.chdir('.\playground')
+        os.chdir('playground')
         # Using subprocess to execute the code and capture the output
         process = subprocess.run(shlex.split(f"python -c \"{input_code}\""), check=True, text=True, capture_output=True)
         # Change back to the original directory after execution
@@ -127,7 +127,7 @@ def print_files_in_playground():
     files = os.listdir('playground')
     for file in files:
         if file.endswith('.xlsx'):
-            df = pd.read_excel(f'playground\{file}')
+            df = pd.read_excel(f'playground/{file}')
             print(f"File: {file}")
             print(df.head())
             print("\n")

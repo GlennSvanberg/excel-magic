@@ -1,12 +1,14 @@
 version: '3'
 services:
-  excel-magic:
-    build: .
+  excelmagic-api:
+    build:
+      context: ./api
     ports:
-      - "5000:5000"
-    volumes:
-      - .:/usr/src/app
-      - ./static:/usr/src/app/static
+      - "7000:7000"
     environment:
       FLASK_APP: app.py
       FLASK_ENV: development
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+    volumes:
+      - ./api/static:/usr/src/app/static
+      - ./api/playground:/usr/src/app/playground

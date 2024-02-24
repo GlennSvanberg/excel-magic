@@ -6,6 +6,8 @@ from werkzeug.utils import secure_filename
 from agent import do_magic, get_head_of_file
 from flask_restx import fields
 from flask import url_for
+from werkzeug.datastructures import FileStorage
+
 app = Flask(__name__)
 api = Api(app, version='1.0', title='Excel Magic API', description='A simple API doing Magic with Excel')
 ns = api.namespace('api', description='API operations')
@@ -19,13 +21,14 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
 @ns.route('/upload')
 class UploadFile(Resource):
+    upload_parser = api.parser()
+    upload_parser.add_argument('file', location='files', type=FileStorage, required=True, help='Excel file')
+    
+    @api.expect(upload_parser)
     @api.response(200, 'Success')
-    #@api.response(400, 'Validation Error')
     def post(self):
         '''Upload a file'''
-        print("Uploading file...")
-        args= request.files
-        print(args)
+        args = self.upload_parser.parse_args()
         file = args['file']
         if file.filename == '':
             api.abort(400, 'No selected file')
@@ -53,6 +56,7 @@ do_magic_model = api.model('DoMagic', {
     'files': fields.List(fields.String, required=True, description='List of files'),
     'messages': fields.List(fields.Nested(message_model), required=True, description='List of messages')
 })
+
 @ns.route('/do_magic')
 class DoMagicRoute(Resource):
     @api.expect(do_magic_model)

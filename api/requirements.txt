@@ -1,7 +1,8 @@
-Flask==2.1.2
+Flask==3.0.2
+Werkzeug==3.0.1
 pandas==1.4.2
 openpyxl==3.0.9
 langchain==0.1.0
-langchain-core
-langchain-openai
-flask-restx
+langchain-core==0.1.23
+langchain-openai==0.0.6
+flask-restx==1.3.0
