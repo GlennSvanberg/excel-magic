@@ -12,3 +12,10 @@ services:
     volumes:
       - ./api/static:/usr/src/app/static
       - ./api/playground:/usr/src/app/playground
+  excel-magic-client: # name of the Vue.js service
+    build: 
+      context: ./client # this should be the path to your Vue app directory
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
+    restart: unless-stopped
