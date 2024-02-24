@@ -1,0 +1,6 @@
+Flask==2.1.2
+pandas==1.4.2
+openpyxl==3.0.9
+langchain==0.1.0
+langchain-core
+langchain-openai
