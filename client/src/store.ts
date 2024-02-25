@@ -5,9 +5,9 @@ interface State {
     }
 
     export default createStore({
-        state: {
+        state: (): State => ({
             fileNames: [],
-        },
+        }),
         mutations: {
             setFileNames(state, payload: string[]) {
                 state.fileNames = payload;
