@@ -1,6 +1,6 @@
 version: '3'
 services:
-  excelmagic-api:
+  excel-magic-api:
     build:
       context: ./api
     ports:

@@ -47,7 +47,8 @@ prompt_template = ChatPromptTemplate(
 @tool
 def execute_code(input_code: str) -> str:
     """Executes the given python code in the playground and returns the output from the terminal. 
-    Use this function to modify excel files and create new excel files."""
+    Use this function to modify excel files and create new excel files. 
+    The name of the new excelfile should be descriptive of what the file contains and have a random number as a suffix to avoid overwriting existing files."""
     print("Running code in /playground...")
     try:
         # print current dir
@@ -73,16 +74,24 @@ def copy_file_to_playground(filename):
         return f"File {filename} copied to /playground"
     except Exception as e:
         return f"Error copying file: {e}"
-    
-def copy_files_to_output(filename):
-    """Copy the file from /playground to /static/output"""
+
+def copy_file_to_uploads_and_output(filename):
+    """Copy the file from /playground to both /uploads and /static/output"""
+    messages = []
+    try:
+        # Copy the file from /playground to /uploads
+        shutil.copy(f'playground/{filename}', f'uploads/{filename}')
+        messages.append(f"File {filename} copied to /uploads")
+    except Exception as e:
+        messages.append(f"Error copying file to /uploads: {e}")
     try:
         # Copy the file from /playground to /static/output
-        os.replace(f'playground/{filename}', f'static/output/{filename}')
-        return f"File {filename} copied to /static/output"
+        shutil.copy(f'playground/{filename}', f'static/output/{filename}')
+        messages.append(f"File {filename} copied to /static/output")
     except Exception as e:
-        return f"Error copying file: {e}"
-    
+        messages.append(f"Error copying file to /static/output: {e}")
+    return "\n".join(messages)
+
 def clear_playground():
     """Clear the /playground folder"""
     try:
@@ -178,7 +187,7 @@ def do_magic(files, messages):
     
     files = find_files_in_playground_that_are_not_in_input()
     for file in files:
-        copy_files_to_output(file)
+        copy_file_to_uploads_and_output(file)
     clear_playground()
 
     return files, ai_response
