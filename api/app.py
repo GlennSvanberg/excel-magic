@@ -7,8 +7,10 @@ from agent import do_magic, get_head_of_file
 from flask_restx import fields
 from flask import url_for
 from werkzeug.datastructures import FileStorage
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 api = Api(app, version='1.0', title='Excel Magic API', description='A simple API doing Magic with Excel')
 ns = api.namespace('api', description='API operations')
 
