@@ -1,7 +1,7 @@
 <template>
     <v-card style="width: 50%; margin: auto;">
         <!-- Messages Display -->
-        <v-list two-line style="height: 50vh; overflow: auto;">
+        <v-list two-line style="height: 50vh; overflow: auto; ">
             <v-list-item v-for="(msg, index) in messages" :key="index">
                 <v-list-item-content>
                     <v-list-item-title>{{ msg.sender }}</v-list-item-title>
@@ -29,7 +29,6 @@ const store = useStore();
 
 const messages = ref<{ sender: string; message: string }[]>([]);
 const inputMessage = ref('');
-const responseFiles = ref<string[]>([]);
 
 const sendMessage = () => {
     if (inputMessage.value) {
@@ -55,18 +54,27 @@ async function getMessage() {
             },
             body: JSON.stringify(payload),
         });
+
         const responseData = await response.json();
+        // responseDate for testing
+        // const responseData: {
+        //     files: string[], message: string
+        // }
+        //     = { files: ["http://localhost:7001/static/output/names.xlsx", "http://localhost:7001/static/output/merged_data.xlsx"], message: "The files have been successfully merged by name, a…ved in a new Excel file named `merged_data.xlsx`." }
         console.log(responseData);
-        messages.value.push({ sender: 'AI', message: responseData.message });
-        const filenames = responseFiles.value.map((file) => file.split('/').pop());
-        console.log(filenames);
-        responseFiles.value = [];
+        const responseLinks: string[] = responseData.files;
+        store.commit('setOutputLinks', responseLinks);
+        const responseMessage: string = responseData.message;
+        messages.value.push({ sender: 'AI', message: responseMessage });
+        const filenames: (string | undefined)[] = responseData.files.map((file: string) => file.split('/').pop());
+        store.commit('clearOutputFilenames');
         filenames.forEach((filename) => {
             if (filename) {
-                responseFiles.value.push(filename);
+                store.commit('addOutputFilenames', filename);
             }
         });
-        console.log(responseFiles.value);
+        console.log(store.state.outputFilenames);
+        console.log(store.state.outputLinks);
     } catch (error) {
         console.error(error);
     }

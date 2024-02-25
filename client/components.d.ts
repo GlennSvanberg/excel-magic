@@ -10,6 +10,7 @@ declare module 'vue' {
     ChatBox: typeof import('./src/components/ChatBox.vue')['default']
     FileDisplay: typeof import('./src/components/FileDisplay.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
+    OutputLinks: typeof import('./src/components/OutputLinks.vue')['default']
     SideBar: typeof import('./src/components/SideBar.vue')['default']
   }
 }
