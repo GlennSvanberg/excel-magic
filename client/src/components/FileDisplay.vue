@@ -1,21 +1,82 @@
 <template>
-  <v-list>
-    <v-list-item v-for="(file, index) in files" :key="index">
-      {{ file }}
-    </v-list-item>
-  </v-list>
+    <h1> {{ fileName }} </h1>
+    <!-- <p> {{ fileContent }} </p> -->
+    <!-- <p> {{ tableHeader }} </p> -->
+    <!-- <p> {{ tableData }} </p> -->
+    <v-data-table :items="tableData"></v-data-table>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
+import { PropType, defineComponent, ref, watch } from 'vue';
+import Papa from 'papaparse';
 
 export default defineComponent({
-  props: {
-    files: {
-      type: Array as PropType<string[]>,
-      required: true
-    }
-  }
+    props: {
+        fileName: {
+            type: String as PropType<string>,
+            required: true,
+        },
+    },
+    setup(props) {
+        const fileContent = ref('');
+        const tableHeader = ref();
+        const tableData = ref();
+
+        // Watch for changes in the fileName prop
+        watch(() => props.fileName, (newFileName, oldFileName) => {
+            fetchData(newFileName);
+        });
+
+        async function fetchData(fileName: string) {
+            // Perform data fetching based on the fileName
+            // Example code:
+            try {
+                const response = await fetch(`http://localhost:7001/api/uploads/${fileName}`,
+                    {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                    }
+                );
+                const responseData = await response.json();
+                Papa.parse(responseData, {
+                    header: true,
+                    complete: (result) => {
+                        if (result.meta.fields) {
+                            tableHeader.value = result.meta.fields;
+                        }
+                        if (result.data) {
+                            tableData.value = result.data as any;
+                        }
+                    },
+                });
+                fileContent.value = responseData;
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        // Initial data fetch
+        fetchData(props.fileName); // Fetch data when the component is mounted or when the prop changes initially
+
+        return {
+            fileContent,
+            tableHeader,
+            tableData,
+        };
+    },
 });
+
+
+
+async function getFiles(fileNames: string[]): Promise<string[]> {
+    const responses: string[] = [];
+
+    for (const fileName of fileNames) {
+    }
+    return responses;
+}
+
 </script>
 
