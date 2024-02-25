@@ -2,7 +2,6 @@
     <v-app>
         <v-layout class="rounded rounded-md">
             <v-app-bar app title="Excel AI Helper"></v-app-bar>
-
             <v-main>
                 <v-row no-gutters style="height: 100vh;">
                     <v-col cols="4">
