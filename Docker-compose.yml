@@ -3,19 +3,18 @@ services:
   excel-magic-api:
     build:
       context: ./api
+    image: inventing.azurecr.io/excel-magic-api:latest
     ports:
-      - "7001:7000"
+      - "7000"
     environment:
       FLASK_APP: app.py
       FLASK_ENV: development
       OPENAI_API_KEY: ${OPENAI_API_KEY}
-    volumes:
-      - ./api/static:/usr/src/app/static
-      - ./api/playground:/usr/src/app/playground
-  excel-magic-client: # name of the Vue.js service
+  excel-magic-client: 
     build: 
-      context: ./client # this should be the path to your Vue app directory
+      context: ./client
       dockerfile: Dockerfile
+    image: inventing.azurecr.io/excel-magic-client:latest
     ports:
-      - "80:80"
+      - "80"
     restart: unless-stopped
