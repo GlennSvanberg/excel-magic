@@ -1,14 +1,14 @@
 <template>
     <v-app>
         <v-layout class="rounded rounded-md">
-            <v-app-bar app title="Excel AI Helper"></v-app-bar>
+            <v-app-bar app title="Excel AI Helper" color="primary"></v-app-bar>
             <v-main>
                 <v-row no-gutters>
-                    <v-col cols="8" style="padding: 1vw 5vw;">
+                    <v-col cols="7" style="padding: 1vw 5vw;">
                         <SideBar />
                     </v-col>
 
-                    <v-col cols="4">
+                    <v-col cols="5" style="padding: 1vw 5vw">
                         <v-row style="padding: 50px">
                             <OutputLinks style="margin: auto;" v-for="file in outputLinks" :key="file" :file="file" />
                         </v-row>

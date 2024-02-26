@@ -18,9 +18,12 @@ const store = useStore();
 
 const outputFilenames = computed(() => store.state.outputFilenames);
 
+const baseUrl = import.meta.env.VITE_APP_API_BASE_URL as string;
+console.log('baseUrl', baseUrl);
+
 async function postFiles(formData: FormData) {
     try {
-        const response = await fetch('http://localhost:80/api/upload', {
+        const response = await fetch(`${baseUrl}api/upload`, {
             method: 'POST',
             body: formData,
         });

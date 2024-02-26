@@ -39,6 +39,8 @@ const sendMessage = () => {
     }
 };
 
+const baseUrl = import.meta.env.VITE_APP_API_BASE_URL as string;
+console.log('baseUrl', baseUrl);
 
 async function getMessage() {
     const payload = {
@@ -47,7 +49,7 @@ async function getMessage() {
     };
 
     try {
-        const response = await fetch('http://localhost:80/api/do_magic', {
+        const response = await fetch(`${baseUrl}api/do_magic`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
