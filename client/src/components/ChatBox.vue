@@ -1,7 +1,7 @@
 <template>
-    <v-card style="width: 50%; margin: auto;">
+    <v-card>
         <!-- Messages Display -->
-        <v-list two-line style="height: 50vh; overflow: auto; ">
+        <v-list two-line style="height: auto; min-height: 50vh;">
             <v-list-item v-for="(msg, index) in messages" :key="index">
                 <v-list-item-content>
                     <v-list-item-title>{{ msg.sender }}</v-list-item-title>
@@ -47,7 +47,7 @@ async function getMessage() {
     };
 
     try {
-        const response = await fetch('http://localhost:7001/api/do_magic', {
+        const response = await fetch('http://localhost:80/api/do_magic', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -61,6 +61,7 @@ async function getMessage() {
         //     files: string[], message: string
         // }
         //     = { files: ["http://localhost:7001/static/output/names.xlsx", "http://localhost:7001/static/output/merged_data.xlsx"], message: "The files have been successfully merged by name, a…ved in a new Excel file named `merged_data.xlsx`." }
+
         console.log(responseData);
         const responseLinks: string[] = responseData.files;
         store.commit('setOutputLinks', responseLinks);
@@ -71,6 +72,7 @@ async function getMessage() {
         filenames.forEach((filename) => {
             if (filename) {
                 store.commit('addOutputFilenames', filename);
+                // store.commit('addFileNames', filename);
             }
         });
         console.log(store.state.outputFilenames);

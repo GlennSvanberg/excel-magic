@@ -1,9 +1,6 @@
 <template>
-    <h1> {{ fileName }} </h1>
-    <!-- <p> {{ fileContent }} </p> -->
-    <!-- <p> {{ tableHeader }} </p> -->
-    <!-- <p> {{ tableData }} </p> -->
-    <v-data-table :items="tableData"></v-data-table>
+    <h1 style="margin: auto; padding-top: 5vh;"> {{ fileName }} </h1>
+    <v-data-table-virtual :items="tableData"></v-data-table-virtual>
 </template>
 
 <script lang="ts">
@@ -31,7 +28,7 @@ export default defineComponent({
             // Perform data fetching based on the fileName
             // Example code:
             try {
-                const response = await fetch(`http://localhost:7001/api/uploads/${fileName}`,
+                const response = await fetch(`http://localhost:80/api/uploads/${fileName}`,
                     {
                         method: 'GET',
                         headers: {

@@ -1,33 +1,33 @@
 <template>
-    <v-list>
-        <v-list-item title="Navigation drawer"></v-list-item>
-        <v-file-input multiple @change="onFilesSelected" @click:clear="clearFiles"
-            label="Multiple file input"></v-file-input>
+    <v-list style="display:flex; flex-direction: column;">
+        <v-file-input multiple @change="onFilesSelected" @click:clear="clearFiles" label="Select your files"></v-file-input>
         <FileDisplay v-for="filename in fileNames" :key="filename" :fileName="filename" />
+        <FileDisplay v-for="filename in outputFilenames" :key="filename" :fileName="filename" />
     </v-list>
 </template>
 
 <script setup lang="ts">
 
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import FileDisplay from './FileDisplay.vue';
-import { useStore } from 'vuex';
+import { useStore, mapState } from 'vuex';
 
 let fileNames = ref<string[]>([]);
 
-
 const store = useStore();
+
+const outputFilenames = computed(() => store.state.outputFilenames);
 
 async function postFiles(formData: FormData) {
     try {
-        const response = await fetch('http://localhost:7001/api/upload', {
+        const response = await fetch('http://localhost:80/api/upload', {
             method: 'POST',
             body: formData,
         });
         // Process response if needed
         const responseData = await response.json();
         console.log(responseData);
-
+        console.log('posted file: ', formData.get('file'));
     } catch (error) {
         console.error(error);
     }
@@ -38,19 +38,25 @@ const onFilesSelected = (e: Event) => {
     const selectedFiles = target?.files;
 
     if (selectedFiles) {
+        const uploadPromises: Promise<void>[] = [];
 
-        // can only upload 1 file at a time and they need to be sent in seperate formData.
-        // should we change in api or live with this here?
-        Array.from(selectedFiles).forEach(file => {
+        Array.from(selectedFiles).forEach((file) => {
             const formData: FormData = new FormData();
             formData.append('file', file, file.name);
-            postFiles(formData);
+            uploadPromises.push(postFiles(formData));
         });
 
-        fileNames.value = Array.from(selectedFiles).map(file => file.name);
-        store.commit('setFileNames', fileNames.value);
+        Promise.all(uploadPromises)
+            .then(() => {
+                fileNames.value = Array.from(selectedFiles).map((file) => file.name);
+                console.log('set filenames:', fileNames.value);
+                store.commit('setFileNames', fileNames.value);
+            })
+            .catch((error) => {
+                console.error('Error uploading files:', error);
+            });
     }
-}
+};
 
 const clearFiles = () => {
     fileNames.value = [];
@@ -58,4 +64,3 @@ const clearFiles = () => {
 }
 
 </script>
-

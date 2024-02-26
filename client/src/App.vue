@@ -4,17 +4,15 @@
             <v-app-bar app title="Excel AI Helper"></v-app-bar>
             <v-main>
                 <v-row no-gutters>
-                    <v-col cols=" 4">
+                    <v-col cols="8" style="padding: 1vw 5vw;">
                         <SideBar />
                     </v-col>
-                    <v-col cols="8">
-                        <ChatBox />
-                        <v-row>
-                            <FileDisplay v-for=" filename in outputFilenames" :key="filename" :fileName="filename" />
-                        </v-row>
-                        <v-row>
+
+                    <v-col cols="4">
+                        <v-row style="padding: 50px">
                             <OutputLinks style="margin: auto;" v-for="file in outputLinks" :key="file" :file="file" />
                         </v-row>
+                        <ChatBox />
                     </v-col>
                 </v-row>
             </v-main>
@@ -30,7 +28,6 @@ export default defineComponent({
     computed: {
         ...mapState({
             outputLinks: (state: any) => state.outputLinks, // Assuming 'count' is a state property in the Vuex store
-            outputFilenames: (state: any) => state.outputFilenames,
         }),
     },
 });

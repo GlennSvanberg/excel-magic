@@ -16,6 +16,9 @@ interface State {
             setFileNames(state, payload: string[]) {
                 state.fileNames = payload;
             },
+            addFileNames(state, payload: string) {
+                state.fileNames.push(payload);
+            },
             setOutputLinks(state, payload: string[]) {
                 state.outputLinks = payload;
             },
