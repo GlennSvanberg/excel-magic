@@ -1,11 +1,19 @@
 <template>
-    <h1 style="margin: auto; padding-top: 5vh;"> {{ fileName }} </h1>
-    <v-data-table-virtual :items="tableData"></v-data-table-virtual>
+    <v-card class="rounded rounded-md" style="margin-top: 2vh" width="100%" color="primary">
+        <v-card-title>
+            <h2 class="text-center">{{ fileName }}</h2>
+        </v-card-title>
+        <v-data-table-virtual :items="tableData"></v-data-table-virtual>
+    </v-card>
 </template>
 
 <script lang="ts">
 import { PropType, defineComponent, ref, watch } from 'vue';
 import Papa from 'papaparse';
+
+const baseUrl = import.meta.env.VITE_APP_API_BASE_URL as string;
+console.log('baseUrl', baseUrl);
+console.log(import.meta.env);
 
 export default defineComponent({
     props: {
@@ -28,7 +36,7 @@ export default defineComponent({
             // Perform data fetching based on the fileName
             // Example code:
             try {
-                const response = await fetch(`http://localhost:80/api/uploads/${fileName}`,
+                const response = await fetch(`${baseUrl}api/uploads/${fileName}`,
                     {
                         method: 'GET',
                         headers: {
