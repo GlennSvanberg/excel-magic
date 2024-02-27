@@ -3,9 +3,9 @@ services:
   excel-magic-api:
     build:
       context: ./api
-    image: inventing.azurecr.io/excel-magic-api:latest
     ports:
-      - "7000"
+      - "7000:7000"
+    image: inventing.azurecr.io/excel-magic-api:latest
     environment:
       FLASK_APP: app.py
       FLASK_ENV: development
@@ -14,7 +14,7 @@ services:
     build: 
       context: ./client
       dockerfile: Dockerfile
-    image: inventing.azurecr.io/excel-magic-client:latest
     ports:
-      - "80"
+      - "80:80"
+    image: inventing.azurecr.io/excel-magic-client:latest
     restart: unless-stopped
